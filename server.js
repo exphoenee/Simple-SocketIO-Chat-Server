@@ -8,16 +8,26 @@ app.use(cors());
 const server = http.createServer(app);
 
 const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
   "http://localhost:5500",
   "http://localhost:8080",
   "http://localhost:8081",
 ];
 
 const io = new Server(server, {
-  cosrs: {
+  cors: {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
+});
+
+io.on("connection", (socket) => {
+  console.log(`A user connected: ${socket.id}`);
+  socket.on("send_message", (data) => {
+    console.log(data);
+    io.emit("receive_message", data);
+  });
 });
 
 server.listen(3000, () => {
